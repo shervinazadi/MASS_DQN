@@ -1,0 +1,60 @@
+2021-03-24 09:22:30,400 INFO    MainThread:14188 [wandb_setup.py:_flush():69] setting env: {}
+2021-03-24 09:22:30,400 INFO    MainThread:14188 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-03-24 09:22:30,400 INFO    MainThread:14188 [wandb_init.py:_log_setup():334] Logging user logs to /Users/shervinazadi/Documents/Git/MASS_DQN/notebooks/tut_03_dqn_atari/wandb/run-20210324_092230-2rd055vf/logs/debug.log
+2021-03-24 09:22:30,401 INFO    MainThread:14188 [wandb_init.py:_log_setup():335] Logging internal logs to /Users/shervinazadi/Documents/Git/MASS_DQN/notebooks/tut_03_dqn_atari/wandb/run-20210324_092230-2rd055vf/logs/debug-internal.log
+2021-03-24 09:22:30,401 INFO    MainThread:14188 [wandb_init.py:init():367] calling init triggers
+2021-03-24 09:22:30,401 INFO    MainThread:14188 [wandb_init.py:init():372] wandb.init called with sweep_config: {}
+config: {}
+2021-03-24 09:22:30,401 INFO    MainThread:14188 [wandb_init.py:init():387] re-initializing run, found existing run on stack: lbitqim4
+2021-03-24 09:22:30,402 INFO    MainThread:14188 [wandb_run.py:finish():1139] finishing run shervinazadi/dqn-tut-03-test/lbitqim4
+2021-03-24 09:22:30,485 INFO    MainThread:14188 [jupyter.py:save_history():320] not saving jupyter history
+2021-03-24 09:22:30,485 INFO    MainThread:14188 [jupyter.py:save_ipynb():265] not saving jupyter notebook
+2021-03-24 09:22:30,485 INFO    MainThread:14188 [wandb_init.py:_jupyter_teardown():266] cleaning up jupyter logic
+2021-03-24 09:22:30,485 INFO    MainThread:14188 [wandb_run.py:_atexit_cleanup():1450] got exitcode: 0
+2021-03-24 09:22:30,485 INFO    MainThread:14188 [wandb_run.py:_restore():1422] restore
+2021-03-24 09:22:30,655 INFO    MainThread:14188 [wandb_run.py:_wait_for_finish():1572] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 934
+  total_bytes: 934
+}
+
+2021-03-24 09:22:32,662 INFO    MainThread:14188 [wandb_run.py:_wait_for_finish():1572] got exit ret: done: true
+exit_result {
+}
+file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 4079
+  total_bytes: 4079
+}
+
+2021-03-24 09:22:33,726 INFO    MainThread:14188 [wandb_run.py:_show_files():1794] logging synced files
+2021-03-24 09:22:33,731 INFO    MainThread:14188 [wandb_init.py:init():416] starting backend
+2021-03-24 09:22:33,731 INFO    MainThread:14188 [backend.py:_multiprocessing_setup():69] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2021-03-24 09:22:33,733 INFO    MainThread:14188 [backend.py:ensure_launched():123] starting backend process...
+2021-03-24 09:22:33,737 INFO    MainThread:14188 [backend.py:ensure_launched():127] started backend process with pid: 23165
+2021-03-24 09:22:33,741 INFO    MainThread:14188 [wandb_init.py:init():421] backend started and connected
+2021-03-24 09:22:33,760 INFO    MainThread:14188 [wandb_init.py:init():461] updated telemetry
+2021-03-24 09:22:33,761 INFO    MainThread:14188 [wandb_init.py:init():480] communicating current version
+2021-03-24 09:22:34,431 INFO    MainThread:14188 [wandb_init.py:init():485] got version response upgrade_message: "wandb version 0.10.23 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2021-03-24 09:22:34,431 INFO    MainThread:14188 [wandb_init.py:init():493] communicating run to backend with 30 second timeout
+2021-03-24 09:22:34,617 INFO    MainThread:14188 [wandb_init.py:init():518] starting run threads in backend
+2021-03-24 09:22:34,630 INFO    MainThread:14188 [wandb_run.py:_console_start():1480] atexit reg
+2021-03-24 09:22:34,631 INFO    MainThread:14188 [wandb_run.py:_redirect():1343] redirect: SettingsConsole.WRAP
+2021-03-24 09:22:34,631 INFO    MainThread:14188 [wandb_run.py:_redirect():1378] Wrapping output streams.
+2021-03-24 09:22:34,632 INFO    MainThread:14188 [wandb_run.py:_redirect():1394] Redirects installed.
+2021-03-24 09:22:34,632 INFO    MainThread:14188 [wandb_init.py:init():542] run started, returning control to user process
+2021-03-24 09:23:12,076 INFO    MainThread:14188 [wandb_setup.py:_flush():69] setting env: {}
+2021-03-24 09:23:12,076 INFO    MainThread:14188 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-03-24 09:23:12,077 INFO    MainThread:14188 [wandb_init.py:_log_setup():334] Logging user logs to /Users/shervinazadi/Documents/Git/MASS_DQN/notebooks/tut_03_dqn_atari/wandb/run-20210324_092312-1l4xu69o/logs/debug.log
+2021-03-24 09:23:12,077 INFO    MainThread:14188 [wandb_init.py:_log_setup():335] Logging internal logs to /Users/shervinazadi/Documents/Git/MASS_DQN/notebooks/tut_03_dqn_atari/wandb/run-20210324_092312-1l4xu69o/logs/debug-internal.log
+2021-03-24 09:23:12,077 INFO    MainThread:14188 [wandb_init.py:_jupyter_setup():285] configuring jupyter hooks <wandb.sdk.wandb_init._WandbInit object at 0x7f8eb8fa70d0>
+2021-03-24 09:23:12,078 INFO    MainThread:14188 [wandb_init.py:init():367] calling init triggers
+2021-03-24 09:23:12,078 INFO    MainThread:14188 [wandb_init.py:init():372] wandb.init called with sweep_config: {}
+config: {}
+2021-03-24 09:23:12,078 INFO    MainThread:14188 [wandb_init.py:init():387] re-initializing run, found existing run on stack: 2rd055vf
+2021-03-24 09:23:12,079 INFO    MainThread:14188 [wandb_run.py:finish():1139] finishing run shervinazadi/dqn-tut-03-test/2rd055vf

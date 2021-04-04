@@ -1,0 +1,27 @@
+{
+    "os": "macOS-10.16-x86_64-i386-64bit",
+    "python": "3.8.5",
+    "heartbeatAt": "2021-03-24T08:22:01.972519",
+    "startedAt": "2021-03-24T08:22:01.042245",
+    "docker": null,
+    "cpu_count": 12,
+    "cuda": null,
+    "args": [
+        "--ip=127.0.0.1",
+        "--stdin=9016",
+        "--control=9014",
+        "--hb=9013",
+        "--Session.signature_scheme=\"hmac-sha256\"",
+        "--Session.key=b\"522b5246-ff09-41f3-9735-db967f2361ec\"",
+        "--shell=9015",
+        "--transport=\"tcp\"",
+        "--iopub=9017",
+        "--f=/var/folders/md/q2tfblls26bglzyrcnsctq_m0000gn/T/tmp-1083K1K3WBvVjqYb.json"
+    ],
+    "state": "running",
+    "program": "/Users/shervinazadi/Documents/Git/MASS_DQN/notebooks/tut_03_dqn_atari/dqn.py",
+    "codePath": "dqn.py",
+    "host": "Shervins-MacBook-Pro-15.local",
+    "username": "shervinazadi",
+    "executable": "/Users/shervinazadi/opt/miniconda3/envs/mass_dqn/bin/python"
+}
