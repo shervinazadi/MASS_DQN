@@ -1,11 +1,11 @@
 {
-    "cSpell.words": [
-        "deque",
-        "dones",
-        "epinfos",
-        "msgpck",
-        "obses",
-        "optim",
-        "rews"
-    ]
+  "cSpell.words": [
+    "deque",
+    "dones",
+    "epinfos",
+    "msgpck",
+    "obss",
+    "optim",
+    "rews"
+  ]
 }

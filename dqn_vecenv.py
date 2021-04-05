@@ -7,7 +7,7 @@ from collections import deque
 import numpy as np
 import random
 from utilities.logger import logger
-from utilities.mass_wrapper import MASS_Env
+from utilities.mass_wrapper import MASS_Env, MASS_VecEnv
 from tqdm import tqdm
 import msgpack
 from utilities.msgpack_numpy import patch as msgpck_numpy_patch
@@ -22,11 +22,12 @@ EPSILON_START = 1.0
 EPSILON_END = 0.1
 EPSILON_DECAY = int(1e6)
 TARGET_UPDATE_FREQ = 10000
+NUM_ENVS = 4
 LR = 2.5e-4
 SAVE_INTERVAL = 10000
 LOG_INTERVAL = 1000 
 PROJECT_NAME = 'MASS_DQN'
-PROJECT_ID = '_0_12'
+PROJECT_ID = '_0_18'
 SAVE_PATH = './models/' + PROJECT_NAME + '/' + PROJECT_ID + '_Model.pack'
 
 
@@ -80,7 +81,7 @@ class Network(nn.Module):
     
     def compute_loss(self, transitions, target_network):
 
-        obs = np.asarray([t[0] for t in transitions])
+        obs = [t[0] for t in transitions]
         act = np.asarray([t[1] for t in transitions])
         rew = np.asarray([t[2] for t in transitions])
         done = np.asarray([t[3] for t in transitions])
@@ -130,7 +131,7 @@ class Network(nn.Module):
 #%%
 device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
 
-env = MASS_Env()
+env = MASS_VecEnv(NUM_ENVS)
 
 replay_buffer = deque(maxlen=BUFFER_SIZE)
 epinfos_buffer = deque([], maxlen=100)
@@ -147,16 +148,17 @@ target_network.load_state_dict(online_network.state_dict())
 optimizer = torch.optim.Adam(online_network.parameters(), lr=LR)
 
 # Initialize the Replay Buffer
-obs = env.reset()
+obss = env.reset()
 for _ in range(MIN_REPLAY_SIZE):
-    action = env.act_space_sample()
+    acts = [e.act_space_sample() for e in env.es]
 
-    new_obs, rew, done, _ = env.step(action)
+    new_obss, rews, dones, _ = env.step(acts)
 
-    transition = (obs, action, rew, done, new_obs)
-    replay_buffer.append(transition)
+    for obs, action, rew, done, new_obs in zip(obss, acts, rews, dones, new_obss):
+        transition = (obs, action, rew, done, new_obs)
+        replay_buffer.append(transition)
 
-    obss = new_obs
+    obss = new_obss
 
 #%%
 # Main training loop
@@ -165,20 +167,21 @@ log = logger(PROJECT_NAME, PROJECT_ID, ['WB', 'LO'])
 tq = tqdm()
 for step in itertools.count():
     # tq.update(1)
-    epsilon = np.interp(step, [0, EPSILON_DECAY], [EPSILON_START, EPSILON_END])
+    epsilon = np.interp(step * NUM_ENVS, [0, EPSILON_DECAY], [EPSILON_START, EPSILON_END])
 
-    act = online_network.act(obs, epsilon)
+    acts = online_network.act(obss, epsilon)
 
-    new_obs, rew, done, info = env.step(act)
+    new_obss, rews, dones, infos = env.step(acts)
 
-    transition = (obs, action, rew, done, new_obs)
-    replay_buffer.append(transition)
+    for obs, action, rew, done, new_obs, info in zip(obss, acts, rews, dones, new_obss, infos):
+        transition = (obs, action, rew, done, new_obs)
+        replay_buffer.append(transition)
 
-    if done:
-        epinfos_buffer.append(info['episode'])
-        episode_count += 1
+        if done:
+            epinfos_buffer.append(info['episode'])
+            episode_count += 1
 
-    obs = new_obs
+    obss = new_obss
 
     # Start Gradient Step
     transitions = random.sample(replay_buffer, BATCH_SIZE)

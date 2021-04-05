@@ -1,119 +1,107 @@
-import os, random
-import numpy as np
+#%%
+import os
 import torch
 from torch import nn
 import itertools
-from baselines_wrappers import DummyVecEnv
-from pytorch_wrappers import make_atari_deepmind, BatchedPytorchFrameStack, PytorchLazyFrames
-import time
-
+from collections import deque
+import numpy as np
+import random
+from utilities.logger import logger
+from utilities.mass_wrapper import MASS_Env
+from tqdm import tqdm
 import msgpack
-from msgpack_numpy import patch as msgpack_numpy_patch
-msgpack_numpy_patch()
+from utilities.msgpack_numpy import patch as msgpck_numpy_patch
+msgpck_numpy_patch()
 
-def nature_cnn(observation_space, depths=(32, 64, 64), final_layer=512):
-    n_input_channels = observation_space.shape[0]
+#%%
+def CNN(obs_space, spissitude, final_layer):
+    n_input_channels = obs_space.shape[0]
 
     cnn = nn.Sequential(
-        nn.Conv2d(n_input_channels, depths[0], kernel_size=8, stride=4),
+        nn.Conv3d(n_input_channels, spissitude[0], kernel_size=8, stride=4),
         nn.ReLU(),
-        nn.Conv2d(depths[0], depths[1], kernel_size=4, stride=2),
+        nn.Conv3d(spissitude[0], spissitude[1], kernel_size=4, stride=2),
         nn.ReLU(),
-        nn.Conv2d(depths[1], depths[2], kernel_size=3, stride=1),
+        nn.Conv3d(spissitude[1], spissitude[2], kernel_size=3, stride=1),
         nn.ReLU(),
         nn.Flatten())
-
-    # Compute shape by doing one forward pass
+    
+    # compute shape by doing one forward pass
     with torch.no_grad():
-        n_flatten = cnn(torch.as_tensor(observation_space.sample()[None]).float()).shape[1]
+        n_flatten = cnn(torch.as_tensor(obs_space.sample()[None]).float()).shape[1]
 
     out = nn.Sequential(cnn, nn.Linear(n_flatten, final_layer), nn.ReLU())
 
     return out
 
 class Network(nn.Module):
-    def __init__(self, env, device):
+    def __init__(self, env, device) -> None:
         super().__init__()
-
-        self.num_actions = env.action_space.n
+        self.num_act = env.act_space_n
         self.device = device
 
-        conv_net = nature_cnn(env.observation_space)
+        conv_net = CNN(env.obs_space, spissitude=(32, 64, 64), final_layer=512)
 
-        self.net = nn.Sequential(conv_net, nn.Linear(512, self.num_actions))
+        self.net = nn.Sequential(conv_net, nn.Linear(512,self.num_act))
 
     def forward(self, x):
         return self.net(x)
 
-    def act(self, obses, epsilon):
-        obses_t = torch.as_tensor(obses, dtype=torch.float32, device=self.device)
-        q_values = self(obses_t)
+    def act(self, obss, epsilon):
+        obss_t = torch.as_tensor(obss, dtype=torch.float32, device=self.device)
+        q_vals = self(obss_t)
 
-        max_q_indices = torch.argmax(q_values, dim=1)
-        actions = max_q_indices.detach().tolist()
+        max_q_indices = torch.argmax(q_vals, dim=1)
+        act = max_q_indices.detach().tolist()
 
-        for i in range(len(actions)):
+        for i in range(len(act)):
             rnd_sample = random.random()
             if rnd_sample <= epsilon:
-                actions[i] = random.randint(0, self.num_actions - 1)
+                act[i] = random.randint(0, self.num_act - 1)
 
-        return actions
-    
+        return act
+
     def load(self, load_path):
         if not os.path.exists(load_path):
             raise FileNotFoundError(load_path)
 
         with open(load_path, 'rb') as f:
             params_numpy = msgpack.loads(f.read())
-
-        params = {k: torch.as_tensor(v, device=self.device) for k,v in params_numpy.items()}
+        
+        params = {k: torch.as_tensor(v, device=self.device) for k, v in params_numpy.items()}
 
         self.load_state_dict(params)
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print('device:', device)
+#%%
+PROJECT_NAME = 'MASS_DQN'
+PROJECT_ID = '_0_12'
+MODEL_PATH = './models/' + PROJECT_NAME + '/' + PROJECT_ID + '_Model.pack'
+PLAYBACK_PATH = './playback/' + PROJECT_NAME + '/' + PROJECT_ID + '_Playback.pack'
 
-make_env = lambda: make_atari_deepmind('Breakout-v0')
+device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
 
-vec_env = DummyVecEnv([make_env for _ in range(1)])
+# TODO: add specifications
+env = MASS_Env()
 
-env = BatchedPytorchFrameStack(vec_env, k=4)
+net = Network(env, device = device)
+net.to(device)
 
-net = Network(env, device)
-net = net.to(device)
-
-net.load('./atari_model.pack')
+net.load('./models/MASS_DQN/_0_12_Model.pack')
 
 obs = env.reset()
-beginning_episode = True
+frames = [obs]
 for t in itertools.count():
-    if isinstance(obs[0], PytorchLazyFrames):
-        act_obs = np.stack([o.get_frames() for o in obs])
-        action = net.act(act_obs, 0.0)
-    else:
-        action = net.act(obs, 0.0)
 
-    if beginning_episode:
-        action = [1]
-        beginning_episode = False
+    action = net.act(obs, 0.0)
 
     obs, rew, done, _ = env.step(action)
-    env.render()
-    time.sleep(0.02)
+    frames.append(obs)
 
     if done[0]:
         obs = env.reset()
-        beginning_episode = True
 
+frames_data = msgpack.dumps(frames)
+with open(PLAYBACK_PATH, 'wb') as f:
+    f.write(frames_data)
 
-
-#%%
-# After Solved, watch it play
-player_net = Network(env)
-player_net.load_state_dict(torch.load("models/60000.pth"))
-while True:
-    action = player_net.act(obs)
-    obs, _, done, _ = env.step(action)
-    env.render()
-    if done:
-        env.reset()
+# %%
